@@ -42,6 +42,7 @@ async function testSuccessProvingAndVerification() {
   const webProof = { tls_proof: tls_proof, notary_pub_key: notaryPubKey };
 
   const bullishRegex = '^.*real potential.*$';
+  const tweetId = '1857667225852826080';
 
   const hash = await vlayer.prove({
     address: prover,
@@ -51,7 +52,8 @@ async function testSuccessProvingAndVerification() {
       {
         webProofJson: JSON.stringify(webProof),
       },
-      bullishRegex
+      bullishRegex,
+      tweetId
     ],
     chainId: chain.id,
   });
@@ -65,7 +67,7 @@ async function testSuccessProvingAndVerification() {
     address: verifier,
     abi: verifierSpec.abi,
     functionName: "verifyBullishPost",
-    args: [proof, text, id, bullishRegex],
+    args: [proof, text, id],
     chain,
     account: account,
   });

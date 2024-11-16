@@ -5,6 +5,7 @@ import {Strings} from "@openzeppelin-contracts-5.0.1/utils/Strings.sol";
 import {Proof} from "vlayer-0.1.0/Proof.sol";
 import {Prover} from "vlayer-0.1.0/Prover.sol";
 import {Web, WebProof, WebProofLib, WebLib} from "vlayer-0.1.0/WebProof.sol";
+import {RegexLib} from "vlayer-0.1.0/Regex.sol";
 
 function fromHexChar(uint8 c) pure returns (uint8) {
     if (bytes1(c) >= bytes1("0") && bytes1(c) <= bytes1("9")) {
@@ -38,9 +39,20 @@ contract WebProofProver is Prover {
     using Strings for string;
     using WebProofLib for WebProof;
     using WebLib for Web;
+    using RegexLib for string;
 
     string constant RPC_URL = "https://sepolia.optimism.io/";
-    string constant TWITTER_URL = "https://api.x.com/2/tweets/1857667225852826080";
+    string constant TWITTER_URL =
+        "https://api.x.com/2/tweets/";
+    mapping(string => bool) bullishRegexes;
+
+    constructor() {
+        string[1] memory bullishRegexes_ = ["^.*real potential.*$"];
+
+        for (uint256 i = 0; i < bullishRegexes_.length; i++) {
+            bullishRegexes[bullishRegexes_[i]] = true;
+        }
+    }
 
     function bytesToAddress(
         bytes memory bys
@@ -73,17 +85,22 @@ contract WebProofProver is Prover {
     }
     function proveBullishPost(
         WebProof calldata webProof,
-        string calldata bullishRegex
+        string calldata bullishRegex,
+        string memory tweetId
     )
         public
         view
-        returns (Proof memory, string memory, string memory, string memory)
+        returns (Proof memory, string memory, string memory)
     {
-        Web memory web = webProof.recover(TWITTER_URL);
+        Web memory web = webProof.recover(string.concat(TWITTER_URL, tweetId));
 
         string memory text = web.jsonGetString("data.text");
         string memory id = web.jsonGetString("data.id");
 
-        return (proof(), text, id, bullishRegex);
+        require(keccak256(abi.encodePacked(tweetId)) == keccak256(abi.encodePacked(id)), "Tweet id mismatch");
+        require(text.matches(bullishRegex), "Text is not bullish");
+        require(bullishRegexes[bullishRegex], "Regex is not bullish");
+
+        return (proof(), text, id);
     }
 }

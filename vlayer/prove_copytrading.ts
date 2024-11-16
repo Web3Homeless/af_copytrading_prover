@@ -54,7 +54,7 @@ async function testSuccessProvingAndVerification() {
   });
   const result = await vlayer.waitForProvingResult(hash);
   const [proof, txHash_, txInput, txTo, txValue] = result;
-  console.log("Has Proof");
+  console.log("Has Proof", proof);
 
   console.log("Verifying...");
 

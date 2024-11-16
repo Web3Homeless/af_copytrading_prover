@@ -5,25 +5,16 @@ import {WebProofProver} from "./WebProofProver.sol";
 
 import {Proof} from "vlayer-0.1.0/Proof.sol";
 import {Verifier} from "vlayer-0.1.0/Verifier.sol";
-import {RegexLib} from "vlayer-0.1.0/Regex.sol";
 
 
 contract WebProofVerifier is Verifier {
-    using RegexLib for string;
 
     address public prover;
     mapping(string => bool) processedHashes;
     mapping(string => bool) postIdsProcessed;
-    mapping(string => bool) bullishRegexes;
     
     constructor(address _prover) {
         prover = _prover;
-
-        string[1] memory bullishRegexes_ = ['.*real potential.*'];
-
-        for (uint256 i = 0; i < bullishRegexes_.length; i++) {
-            bullishRegexes[bullishRegexes_[i]] = true;
-        }
     }
 
     function verifyCopytrading(
@@ -45,13 +36,10 @@ contract WebProofVerifier is Verifier {
     function verifyBullishPost(
         Proof calldata,
         string memory text,
-        string memory id,
-        string memory bullishRegex
+        string memory id
     ) public onlyVerified(prover, WebProofProver.proveBullishPost.selector) {
-        require(text.matches(bullishRegex), "Text is not bullish");
-        // require(bullishRegexes[bullishRegex], "Regex is not bullish");
-        // require(!postIdsProcessed[id], "Post already processed");
-// 
-        // postIdsProcessed[id] = true;
+        require(!postIdsProcessed[id], "Post already processed");
+
+        postIdsProcessed[id] = true;
     }
 }

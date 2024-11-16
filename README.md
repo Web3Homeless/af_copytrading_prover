@@ -6,6 +6,21 @@
 
 ## Usage
 
+### Install submodules
+
+```
+git submodule init
+git submodule update
+
+```
+
+### Install dependencies
+
+```shell
+$ cd vlayer
+$ pnpm install
+```
+
 ### Build
 
 ```shell

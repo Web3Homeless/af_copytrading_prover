@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import {Strings} from "@openzeppelin-contracts-5.0.1/utils/Strings.sol";
-
 import {Proof} from "vlayer-0.1.0/Proof.sol";
 import {Prover} from "vlayer-0.1.0/Prover.sol";
 import {Web, WebProof, WebProofLib, WebLib} from "vlayer-0.1.0/WebProof.sol";
@@ -42,13 +41,15 @@ contract WebProofProver is Prover {
 
     string constant RPC_URL = "https://sepolia.optimism.io/";
 
-    function bytesToAddress(bytes memory bys) private pure returns (address addr) {
+    function bytesToAddress(
+        bytes memory bys
+    ) private pure returns (address addr) {
         assembly {
             addr := mload(add(bys, 20))
         }
     }
 
-    function main(
+    function proveCopyTrading(
         WebProof calldata webProof
     )
         public
@@ -68,5 +69,20 @@ contract WebProofProver is Prover {
         );
 
         return (proof(), txHash, txInput, txTo, txValue);
+    }
+    function proveBullishPost(
+        WebProof calldata webProof,
+        string calldata bullishRegex
+    )
+        public
+        view
+        returns (Proof memory, string memory, string memory)
+    {
+        Web memory web = webProof.recover(RPC_URL);
+
+        string memory text = web.jsonGetString("data.text");
+        string memory id = web.jsonGetString("data.id");
+
+        return (proof(), text, id);
     }
 }

@@ -22,9 +22,10 @@ function fromHexChar(uint8 c) pure returns (uint8) {
 
 function fromHex(string memory s) pure returns (bytes memory) {
     bytes memory ss = bytes(s);
-    require(ss.length % 2 == 0); // length must be even
+    require(ss.length % 2 == 0, "Must be even"); // length must be even
     bytes memory r = new bytes(ss.length / 2);
-    for (uint i = 0; i < ss.length / 2; ++i) {
+    // Skipping 0x
+    for (uint i = 1; i < ss.length / 2; ++i) {
         r[i] = bytes1(
             fromHexChar(uint8(ss[2 * i])) *
                 16 +

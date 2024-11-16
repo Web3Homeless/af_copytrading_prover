@@ -40,6 +40,7 @@ contract WebProofProver is Prover {
     using WebLib for Web;
 
     string constant RPC_URL = "https://sepolia.optimism.io/";
+    string constant TWITTER_URL = "https://api.x.com/2/tweets/1857667225852826080";
 
     function bytesToAddress(
         bytes memory bys
@@ -49,7 +50,7 @@ contract WebProofProver is Prover {
         }
     }
 
-    function proveCopyTrading(
+    function proveCopytrading(
         WebProof calldata webProof
     )
         public
@@ -76,13 +77,13 @@ contract WebProofProver is Prover {
     )
         public
         view
-        returns (Proof memory, string memory, string memory)
+        returns (Proof memory, string memory, string memory, string memory)
     {
-        Web memory web = webProof.recover(RPC_URL);
+        Web memory web = webProof.recover(TWITTER_URL);
 
         string memory text = web.jsonGetString("data.text");
         string memory id = web.jsonGetString("data.id");
 
-        return (proof(), text, id);
+        return (proof(), text, id, bullishRegex);
     }
 }

@@ -1,7 +1,7 @@
 import { createVlayerClient } from "@vlayer/sdk";
 import proverSpec from "../out/WebProofProver.sol/WebProofProver";
 import verifierSpec from "../out/WebProofVerifier.sol/WebProofVerifier";
-import tls_proof from "./tls_proof.json";
+import tls_proof from "./simple_proof_sepolia.optimism.io.json";
 import * as assert from "assert";
 import { encodePacked, isAddress, keccak256 } from "viem";
 
@@ -43,7 +43,7 @@ async function testSuccessProvingAndVerification() {
 
   const hash = await vlayer.prove({
     address: prover,
-    functionName: "main",
+    functionName: "proveCopytrading",
     proverAbi: proverSpec.abi,
     args: [
       {
@@ -66,7 +66,7 @@ async function testSuccessProvingAndVerification() {
   const txHash = await ethClient.writeContract({
     address: verifier,
     abi: verifierSpec.abi,
-    functionName: "verify",
+    functionName: "verifyCopytrading",
     args: [proof, txHash_, txInput, txTo, txValue],
     chain,
     account: account,
@@ -81,34 +81,3 @@ async function testSuccessProvingAndVerification() {
 
   console.log("Verified!");
 }
-
-// async function testFailedProving() {
-
-//   console.log("Proving...");
-
-//   const wrongWebProof = { tls_proof: tls_proof, notary_pub_key: "wrong" };
-
-//   try {
-//     const hash = await vlayer.prove({
-//       address: prover,
-//       functionName: "main",
-//       proverAbi: proverSpec.abi,
-//       args: [
-//         {
-//           webProofJson: JSON.stringify(wrongWebProof),
-//         },
-//       ],
-//       chainId: chain.id,
-//     });
-//     await vlayer.waitForProvingResult(hash);
-//     throw new Error("Proving should have failed!");
-//   } catch (error) {
-//     assert.ok(error instanceof Error, `Invalid error returned: ${error}`);
-//     assert.equal(
-//       error.message,
-//       "Error response: Host error: TravelCallExecutor error: EVM transact error: ASN.1 error: PEM error: PEM preamble contains invalid data (NUL byte) at line 1 column 22883",
-//       `Error with wrong message returned: ${error.message}`
-//     );
-//     console.log("Proving failed as expected with message:", error.message);
-//   }
-// }

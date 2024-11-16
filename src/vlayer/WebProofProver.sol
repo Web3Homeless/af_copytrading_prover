@@ -39,7 +39,7 @@ contract WebProofProver is Prover {
     using WebProofLib for WebProof;
     using WebLib for Web;
 
-    string constant RPC_URL = "https://sepolia.optimism.io";
+    string constant RPC_URL = "https://sepolia.optimism.io/";
 
     function bytesToAddress(bytes memory bys) private pure returns (address addr) {
         assembly {
@@ -54,7 +54,7 @@ contract WebProofProver is Prover {
         view
         returns (Proof memory, string memory, bytes memory, address, uint256)
     {
-        Web memory web = webProof.verify(RPC_URL);
+        Web memory web = webProof.recover(RPC_URL);
 
         string memory txHash = web.jsonGetString("result.hash");
         bytes memory txInput = fromHex(web.jsonGetString("result.input"));

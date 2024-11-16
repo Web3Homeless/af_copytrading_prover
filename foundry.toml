@@ -12,7 +12,7 @@ vlayer = "0.1.0-nightly-20241115-70dfc11"
 
 [soldeer]
 # whether soldeer manages remappings
-remappings_generate = false
+remappings_generate = true
 # whether soldeer re-generates all remappings when installing, updating or uninstalling deps
-remappings_regenerate = false
+remappings_regenerate = true
 
